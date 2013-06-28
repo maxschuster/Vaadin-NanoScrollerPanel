@@ -4,6 +4,7 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractSingleComponentContainer;
 
+import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelClientRpc;
 import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelState;
 
 //TODO implement Scrollable etc...
@@ -16,6 +17,10 @@ public class NanoScrollerPanel extends AbstractSingleComponentContainer {
 	public NanoScrollerPanel() {
 		super();
     }
+	
+	public void refresh() {
+		getRpcProxy(NanoScrollerPanelClientRpc.class).refresh();
+	}
 
     @Override
     public NanoScrollerPanelState getState() {

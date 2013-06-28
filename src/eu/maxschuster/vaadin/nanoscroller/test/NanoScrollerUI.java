@@ -23,11 +23,12 @@ public class NanoScrollerUI extends UI {
 		
 		NanoScrollerPanel panel = new NanoScrollerPanel();
 		panel.setHeight("100px");
+		panel.setWidth("200px");
 		layout.addComponent(panel);
 		
 		final VerticalLayout panelLayout = new VerticalLayout();
 		panel.setContent(panelLayout);
-		panel.setAlwaysVisible(true);
+		panel.setAlwaysVisible(false);
 		panel.setiOSNativeScrolling(false);
 		panel.setPreventPageScrolling(true);
 
