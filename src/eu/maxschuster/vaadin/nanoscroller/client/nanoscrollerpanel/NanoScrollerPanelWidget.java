@@ -11,6 +11,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class NanoScrollerPanelWidget extends SimplePanel {
+	
+	public interface NanoScrollerPanelWidgetListener {
+		public void scrollTop();
+		public void scrollEnd();
+	}
 
 	public static final String CLASSNAME = "v-nanoscrollerpanel";
 
@@ -66,10 +71,14 @@ public class NanoScrollerPanelWidget extends SimplePanel {
 	 * a maximum height for the `.slider` element.
 	 */
 	public Integer sliderMaxHeight = null;
+	
+	public int debounceTime = 100;
+	
+	public NanoScrollerPanelWidgetListener listener = null;
 
 	public NanoScrollerPanelWidget() {
 		
-		checkRrequirements();
+		checkRrequirements(); 
 		
 		setStyleName(CLASSNAME);
 
@@ -98,7 +107,7 @@ public class NanoScrollerPanelWidget extends SimplePanel {
 	}
 
 	public void refresh() {
-		attachScroller(getElement(), contentNode, getOptions());
+		attachScroller(getElement(), contentNode, getOptions(), debounceTime);
 	}
 	
 	private static native void checkRrequirements() /*-{
@@ -108,13 +117,31 @@ public class NanoScrollerPanelWidget extends SimplePanel {
 		if (typeof $wnd.jQuery.fn.nanoScroller != 'function') {
 			throw new Error("The jQuery.nanoScroller plugin has not been loaded!");
 		}
+		if (typeof $wnd.jQuery.fn.debounce != 'function') {
+			throw new Error("The jQuery.debounce plugin has not been loaded!");
+		}
 	}-*/;
 
 	// TODO Fix native scrolling
-	private static native void attachScroller(Element container, Element content,
-			JavaScriptObject options)/*-{
-			$wnd.jQuery(container).nanoScroller(options);
+	private native void attachScroller(Element container, Element content,
+			JavaScriptObject options, int debounceTime)/*-{
+			var self = this, $container = $wnd.jQuery(container);
+			$wnd.jQuery(container).nanoScroller(options).off('scrollend scrolltop');
+			$container.debounce('scrollend',function() {
+				self.@eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelWidget::scrollEnd()();
+			}, debounceTime);
+			$container.debounce('scrolltop', function() {
+				self.@eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelWidget::scrollTop()();
+			}, debounceTime);
 	}-*/;
+	
+	public void scrollTop() {
+		if (listener != null) listener.scrollTop();
+	}
+	
+	public void scrollEnd() {
+		if (listener != null) listener.scrollEnd();
+	}
 
 	@Override
 	protected Element getContainerElement() {
@@ -175,6 +202,14 @@ public class NanoScrollerPanelWidget extends SimplePanel {
 
 	public void setSliderMaxHeight(Integer sliderMaxHeight) {
 		this.sliderMaxHeight = sliderMaxHeight;
+	}
+
+	public int getDebounceTime() {
+		return debounceTime;
+	}
+
+	public void setDebounceTime(int debounceTime) {
+		this.debounceTime = debounceTime;
 	}
 
 }

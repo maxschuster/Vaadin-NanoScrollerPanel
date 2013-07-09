@@ -8,6 +8,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import eu.maxschuster.vaadin.nanoscroller.NanoScrollerPanel;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollEndEvent;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollEndListener;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollTopEvent;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollTopListener;
 
 /**
  * Main UI class
@@ -31,6 +35,22 @@ public class NanoScrollerUI extends UI {
 		panel.setAlwaysVisible(false);
 		panel.setiOSNativeScrolling(false);
 		panel.setPreventPageScrolling(true);
+		panel.setDebounceTime(500);
+		panel.addListener(new ScrollEndListener() {
+			
+			@Override
+			public void onScrollEnd(ScrollEndEvent event) {
+				System.out.println("Scrolled to end!");
+			}
+		});
+		
+		panel.addListener(new ScrollTopListener() {
+			
+			@Override
+			public void onScrollTop(ScrollTopEvent event) {
+				System.out.println("Scrolled to top!");
+			}
+		});
 
 		Button button = new Button("Click Me");
 		button.addClickListener(new Button.ClickListener() {

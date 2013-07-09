@@ -5,21 +5,65 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractSingleComponentContainer;
 
 import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelClientRpc;
+import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelServerRpc;
 import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelState;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollEndEvent;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollEndListener;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollTopEvent;
+import eu.maxschuster.vaadin.nanoscroller.event.ScrollTopListener;
 
 //TODO implement Scrollable etc...
-@JavaScript("js/jquery.nanoscroller.js")
+@JavaScript({"js/jquery.nanoscroller.min.js","js/jquery-debounce-min.js"})
 @StyleSheet("css/nanoscroller.css")
 public class NanoScrollerPanel extends AbstractSingleComponentContainer {
 
 	private static final long serialVersionUID = -8308664784164183763L;
+	
+	@SuppressWarnings("serial")
+	private NanoScrollerPanelServerRpc rpc = new NanoScrollerPanelServerRpc() {
+		
+		@Override
+		public void scrollEnd() {
+			fireScrollEndEvent();
+		}
+
+		@Override
+		public void scrollTop() {
+			fireScrollTopEvent();
+		}
+	};
 
 	public NanoScrollerPanel() {
 		super();
+		registerRpc(rpc);
     }
 	
 	public void refresh() {
 		getRpcProxy(NanoScrollerPanelClientRpc.class).refresh();
+	}
+	
+	public void fireScrollTopEvent() {
+		fireEvent(new ScrollTopEvent(this));
+	}
+	
+	public void addListener(ScrollTopListener listener) {
+		addListener(ScrollTopEvent.EVENT_ID, ScrollTopEvent.class, listener, ScrollTopListener.onScrollTopMethod);
+	}
+	
+	public void removeListener(ScrollTopListener listener) {
+		removeListener(ScrollTopEvent.EVENT_ID, ScrollTopEvent.class, listener);
+	}
+	
+	public void fireScrollEndEvent() {
+		fireEvent(new ScrollEndEvent(this));
+	}
+	
+	public void addListener(ScrollEndListener listener) {
+		addListener(ScrollEndEvent.EVENT_ID, ScrollEndEvent.class, listener, ScrollEndListener.onScrollEndMethod);
+	}
+	
+	public void removeListener(ScrollEndListener listener) {
+		removeListener(ScrollEndEvent.EVENT_ID, ScrollTopEvent.class, listener);
 	}
 
     @Override
@@ -81,6 +125,14 @@ public class NanoScrollerPanel extends AbstractSingleComponentContainer {
 
     public void setSliderMaxHeight(Integer sliderMaxHeight) {
     	getState().sliderMaxHeight = sliderMaxHeight;
+    }
+    
+    public int getDebounceTime() {
+    	return getState().debounceTime;
+    }
+    
+    public void setDebounceTime(int debounceTime) {
+    	getState().debounceTime = debounceTime;
     }
 
 }

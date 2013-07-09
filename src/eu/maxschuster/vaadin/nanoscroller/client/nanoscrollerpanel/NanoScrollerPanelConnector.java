@@ -13,12 +13,18 @@ import eu.maxschuster.vaadin.nanoscroller.NanoScrollerPanel;
 import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelWidget;
 import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelClientRpc;
 import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelState;
+import eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelWidget.NanoScrollerPanelWidgetListener;
+
+import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 
 @Connect(NanoScrollerPanel.class)
 public class NanoScrollerPanelConnector extends AbstractSingleComponentContainerConnector implements SimpleManagedLayout {
 	
 	private static final long serialVersionUID = 1600467056362736199L;
+	
+	private NanoScrollerPanelServerRpc rpc = RpcProxy
+            .create(NanoScrollerPanelServerRpc.class, this);
 
 	public NanoScrollerPanelConnector() {    
         registerRpc(NanoScrollerPanelClientRpc.class, new NanoScrollerPanelClientRpc() {
@@ -33,7 +39,19 @@ public class NanoScrollerPanelConnector extends AbstractSingleComponentContainer
 
     @Override
     protected Widget createWidget() {
-        return GWT.create(NanoScrollerPanelWidget.class);
+    	NanoScrollerPanelWidget w = GWT.create(NanoScrollerPanelWidget.class);
+    	w.listener = new NanoScrollerPanelWidgetListener() {
+			@Override
+			public void scrollTop() {
+				rpc.scrollTop();
+			}
+			
+			@Override
+			public void scrollEnd() {
+				rpc.scrollEnd();
+			}
+		};
+        return w;
     }
 
     @Override
@@ -59,6 +77,7 @@ public class NanoScrollerPanelConnector extends AbstractSingleComponentContainer
         widget.setPreventPageScrolling(state.preventPageScrolling);
         widget.setSliderMaxHeight(state.sliderMaxHeight);
         widget.setSliderMinHeight(state.sliderMinHeight);
+        widget.setDebounceTime(state.debounceTime);
     }
 
 	@Override

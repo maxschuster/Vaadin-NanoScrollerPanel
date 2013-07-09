@@ -40,5 +40,7 @@ public class NanoScrollerPanelState extends com.vaadin.shared.AbstractComponentS
     */
 	public Integer sliderMaxHeight = null;
 	
+	public int debounceTime = 100;
+	
 
 }
