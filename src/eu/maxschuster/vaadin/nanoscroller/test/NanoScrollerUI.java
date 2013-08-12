@@ -1,5 +1,6 @@
 package eu.maxschuster.vaadin.nanoscroller.test;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -17,6 +18,7 @@ import eu.maxschuster.vaadin.nanoscroller.event.ScrollTopListener;
  * Main UI class
  */
 @SuppressWarnings("serial")
+@PreserveOnRefresh
 public class NanoScrollerUI extends UI {
 
 	@Override

@@ -107,7 +107,7 @@ public class NanoScrollerPanelWidget extends SimplePanel {
 	}
 
 	public void refresh() {
-		attachScroller(getElement(), contentNode, getOptions(), debounceTime);
+		attachScroller(this, getElement(), contentNode, getOptions(), debounceTime);
 	}
 	
 	private static native void checkRrequirements() /*-{
@@ -123,9 +123,9 @@ public class NanoScrollerPanelWidget extends SimplePanel {
 	}-*/;
 
 	// TODO Fix native scrolling
-	private native void attachScroller(Element container, Element content,
+	private native void attachScroller(NanoScrollerPanelWidget self, Element container, Element content,
 			JavaScriptObject options, int debounceTime)/*-{
-			var self = this, $container = $wnd.jQuery(container);
+			var $container = $wnd.jQuery(container);
 			$wnd.jQuery(container).nanoScroller(options).off('scrollend scrolltop');
 			$container.debounce('scrollend',function() {
 				self.@eu.maxschuster.vaadin.nanoscroller.client.nanoscrollerpanel.NanoScrollerPanelWidget::scrollEnd()();
